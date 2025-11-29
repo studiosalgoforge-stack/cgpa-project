@@ -6,16 +6,44 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  async function handleSubmit(e: any) {
+  // State to hold form data
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+
+  // Update state when user types
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
 
-    // Fake delay (replace with API request)
-    setTimeout(() => {
+    try {
+      // Send data to our new API
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        setFormData({ name: "", email: "", subject: "", message: "" }); // Clear form
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send message.");
+    } finally {
       setLoading(false);
-      setSuccess(true);
-    }, 1500);
+    }
   }
 
   return (
@@ -58,6 +86,9 @@ export default function ContactPage() {
               <input
                 required
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter your name"
               />
@@ -71,6 +102,9 @@ export default function ContactPage() {
               <input
                 required
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="yourname@example.com"
               />
@@ -84,6 +118,9 @@ export default function ContactPage() {
               <input
                 required
                 type="text"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
                 className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="What is your query about?"
               />
@@ -97,6 +134,9 @@ export default function ContactPage() {
               <textarea
                 required
                 rows={5}
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
                 className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Write your message..."
               />
