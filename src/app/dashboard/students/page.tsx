@@ -10,7 +10,6 @@ interface Student {
   cgpaStatus: "pending" | "in-progress" | "completed";
 }
 
-// Helper to read auth_token cookie (Kept, as it's still needed for API calls)
 function getAuthToken() {
   if (typeof document === "undefined") return null;
 
