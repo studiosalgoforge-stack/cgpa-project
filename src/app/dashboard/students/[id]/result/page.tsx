@@ -184,6 +184,87 @@ export default function ResultPage() {
             </section>
           </div>
 
+          {/* Profile Summary & Recommendations */}
+<section className="bg-white p-6 rounded-2xl shadow-md border-t-4 border-indigo-500 mt-6">
+  <h3 className="text-lg font-semibold text-indigo-700 flex items-center gap-2">
+    <Award className="w-5 h-5" /> Profile Summary
+  </h3>
+
+  {/* Summary Text */}
+  <div className="mt-3 bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+    <p className="text-slate-700 leading-relaxed text-sm">
+      {student.profileSummary || "No summary generated yet."}
+    </p>
+  </div>
+
+  {/* Recommendations */}
+  {student.recommendations?.length > 0 && (
+    <div className="mt-5">
+      <h4 className="text-md font-semibold text-indigo-600">Recommendations</h4>
+      <ul className="mt-3 space-y-2">
+        {student.recommendations.map((rec: string, i: number) => (
+          <li
+            key={i}
+            className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200"
+          >
+            <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+            <span className="text-slate-700 text-sm">{rec}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</section>
+{/* Summary Section */}
+<section className="bg-white p-6 rounded-2xl shadow-md border-t-4 border-green-500 mt-6">
+  <h3 className="text-lg font-semibold text-green-700 flex items-center gap-2">
+    <Award className="w-5 h-5" /> Final Summary
+  </h3>
+
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+    <ScoreCard 
+      title="Overall Score"
+      score={student.notesAnalysis?.score ? Number(student.notesAnalysis.score) : null}
+      icon={Award}
+    />
+
+    <ScoreCard 
+      title="Focus & Clarity"
+      score={student.notesAnalysis?.focusClarityScore ? Number(student.notesAnalysis.focusClarityScore) : null}
+      icon={Award}
+    />
+
+    <ScoreCard 
+      title="Keywords Count"
+      score={Array.isArray(student.notesAnalysis?.keywords) ? student.notesAnalysis.keywords.length : null}
+      icon={Award}
+    />
+  </div>
+
+  {/* Notes Extracted Text */}
+  <div className="mt-4">
+    <p className="text-sm font-medium text-gray-700">Extracted Notes Summary</p>
+    <div className="mt-2 bg-gray-50 p-3 rounded max-h-36 overflow-y-auto text-sm text-gray-600">
+      {student.notesAnalysis?.rawResponse?.ocr_extracted_text || "No summary extracted."}
+    </div>
+  </div>
+
+  {/* Voice Summary */}
+  <div className="mt-4">
+    <p className="text-sm font-medium text-gray-700">Voice Summary</p>
+    <div className="mt-2 bg-gray-50 p-3 rounded text-sm text-gray-600">
+      {student.voiceAnalysis?.summary || "No voice summary available."}
+    </div>
+  </div>
+
+  {student.notesAnalysis?.analysis?.clarity_explanation && (
+    <p className="mt-2 text-xs text-gray-500 italic">
+      {student.notesAnalysis.analysis.clarity_explanation}
+    </p>
+  )}
+</section>
+
+
           {/* Save card */}
           <div className="mt-6 bg-white p-6 rounded-2xl shadow-md border border-gray-100">
             {error && (
