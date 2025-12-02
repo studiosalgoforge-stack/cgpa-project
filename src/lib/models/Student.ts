@@ -51,6 +51,10 @@ voiceAnalysis: {
     // Final Prediction
     cgpaPrediction: { type: Number, default: null },
 academicStatus: { type: String, default: "" },
+
+    
+profileSummary: { type: String, default: "" },
+recommendations: { type: [String], default: [] },
     // Workflow Status
     status: {
       type: String,
