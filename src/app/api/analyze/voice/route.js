@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connect } from "@/lib/db";
 import Student from "@/lib/models/Student";
+import { buildStudentSummary } from "@/lib/buildStudentSummary";
 
 export const runtime = "nodejs";
 
@@ -79,16 +80,28 @@ export async function POST(req) {
     };
 
     // 5️⃣ Save everything in DB
-    const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
-      {
-        voiceAnalysis: mappedVoiceAnalysis,
-        cgpaPrediction: prediction.predicted_cgpa,
-        academicStatus: prediction.academic_status,
-        status: "COMPLETED",
-      },
-      { new: true }
-    );
+// Fetch notes analysis to include in summary
+const studentAfterNotes = await Student.findById(studentId).lean();
+
+const summaryData = buildStudentSummary({
+  cgpa: prediction.predicted_cgpa,
+  notes: studentAfterNotes.notesAnalysis,
+  voice: mappedVoiceAnalysis
+});
+
+const updatedStudent = await Student.findByIdAndUpdate(
+  studentId,
+  {
+    voiceAnalysis: mappedVoiceAnalysis,
+    cgpaPrediction: prediction.predicted_cgpa,
+    academicStatus: prediction.academic_status,
+    profileSummary: summaryData.summary,
+    recommendations: summaryData.recommendations,
+    status: "COMPLETED"
+  },
+  { new: true }
+);
+
 
     console.log("💾 Updated Student Voice + Prediction:", updatedStudent);
 
